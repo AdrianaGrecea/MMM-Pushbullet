@@ -1,0 +1,22 @@
+{
+  "name": "MMM-Pushbullet",
+  "version": "0.1.0",
+  "description": "Pushbullet notifications.  Connect to a pushbullet stream to recieve non-encrypted messages.",
+  "main": "MMM-Pushbullet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjtice/MMM-Pushbullet.git"
+  },
+  "author": "M Tice",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/barnabycolby/MMM-Pushbullet/issues"
+  },
+  "homepage": "https://github.com/barnabycolby/MMM-Pushbullet#readme",
+  "dependencies": {
+    "pushbullet": "latest"
+  }
+}
