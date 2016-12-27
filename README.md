@@ -23,7 +23,11 @@ To use this module, add the following configuration block to the modules array i
 ```
 
 ### Configuration options
-#### apiKey
-Type: `String` Default value: `[]`
+#### api_key
+Type: `String` Default value: `''`
 
 API key from Pushbullet.
+#### message_read_time
+Type: `Integer` Default value: `5000`
+
+Time in ms that notifications are displayed.
