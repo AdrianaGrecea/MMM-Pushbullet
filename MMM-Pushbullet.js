@@ -4,7 +4,9 @@ Module.register("MMM-Pushbullet",{
     defaults: {
         api_key: '',
         no_message_text: 'No new notifications',
-        message_read_time: 5000,
+        message_read_time: 30000,
+        message_length: 10,
+        show_message_body: true,
     },
 
    start: function() {
@@ -20,42 +22,8 @@ Module.register("MMM-Pushbullet",{
 
     // Override dom generator.
     getDom: function(){
-/*
-        // Create the table
-        var notification_area = document.createElement("table");
-        notification_area.className = "small normal";
+        no_message_text = this.config.no_message_text;
 
-        // Create the table header then append it to the table
-        notification_header = document.createElement("th");
-        notification_header.innerHTML = "Notifications";
-        notification_area.appendChild(notification_header);
-
-        // Create the table row and cell
-        notification_row = document.createElement("tr");
-        notification_area.appendChild(notification_row);
-
-        notification_cell = document.createElement("td");
-        notification_area.appendChild(notification_cell);
-        notification_cell.innerHTML = this.title;
-
-        // Set some defaults.  If we don't have any messages
-        // then set the css accordingly
-        if (this.title === this.config.no_message_text) {
-            notification_cell.className = "dimmed";
-        }else{
-            notification_cell.className = "bright";
-        }
-
-        // Set the value of the notification area back to default after
-        // this.config.message_read_time amount of time.
-        if (this.title !== this.config.no_message_text) {
-            setTimeout(function() {
-                console.log('reset');
-                notification_cell.innerHTML = this.config.no_message_text;
-                notification_cell.className = "normal";
-            }, this.config.message_read_time);
-        }
-*/
         var wrapper = document.createElement("div");
         var header = document.createElement("header");
         header.classList.add("align-left");
@@ -64,24 +32,55 @@ Module.register("MMM-Pushbullet",{
         logo.classList.add("fa", "fa-bell-o", "logo");
         header.appendChild(logo);
 
-        var name = document.createElement("span");
-        name.innerHTML = this.translate("NOTIFICATIONS");
-        header.appendChild(name);
+        var banner = document.createElement("span");
+        banner.innerHTML = this.translate("NOTIFICATIONS");
+        header.appendChild(banner);
         wrapper.appendChild(header);
 
-        var text = document.createElement("div");
-        text.classList.add("dimmed", "light", "small");
+        var message_from = document.createElement("div");
+        message_from.classList.add("dimmed", "light", "small");
+
         if (this.new_notification === false) {
-            text.innerHTML = this.config.no_message_text;
-            wrapper.appendChild(text);
+            message_from.innerHTML = this.config.no_message_text;
+            wrapper.appendChild(message_from);
          }else{
-            text.innerHTML = this.title;
-            wrapper.appendChild(text);
-            setTimeout(function() {
-                //this.new_notification = false;
-                //this.updateDom(1000);
-                text.innerHTML = this.config.no_message_text;
-            }, this.config.message_read_time);
+            message_from.classList.add("bright");
+            message_from.innerHTML = this.payload.title;
+            wrapper.appendChild(message_from);
+
+            // Show the body if we set it to true
+            if (this.config.show_message_body === true) {
+                var i = this.payload.message;
+                var message_body_wrapper = document.createElement("div");
+                message_body_wrapper.setAttribute("id", "message_body_wrapper");
+                var message_body;
+                var regexp = /\d+ new messages/gi;
+                i.split('\n').forEach(function(j) {
+                    // If an element matches the string 'new messages' then skip it.
+                    if (! j.match(regexp)) {
+                        message_body = document.createElement("div");
+                        message_body.classList.add("dimmed", "light", "xsmall", "address" );
+                        message_body.innerHTML = j;
+                        message_body_wrapper.appendChild(message_body);
+                    }
+                });
+                wrapper.appendChild(message_body_wrapper);
+            }
+
+            // Remove notifications after n milliseconds if option is non-zero
+            if (this.config.message_read_time !== 0) {
+                that = this;
+                setTimeout(function() {
+                    message_from.classList.remove("bright");
+                    message_from.innerHTML = no_message_text;
+                    if (that.config.show_message_body === true) {
+                        var element = document.getElementById("message_body_wrapper");
+                        if (element !== null) {
+                            element.parentNode.removeChild(element);
+                        }
+                    }
+                }, this.config.message_read_time);
+             }
          }
 
         //return notification_area;
@@ -103,7 +102,7 @@ Module.register("MMM-Pushbullet",{
     socketNotificationReceived: function(notification, payload) {
         if (notification === 'PUSH') {
             console.log('Recieved push notification.');
-            this.title = payload
+            this.payload = payload
             this.new_notification = true;
             this.updateDom(1000);
         }
