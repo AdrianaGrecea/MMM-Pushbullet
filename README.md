@@ -23,6 +23,15 @@ To use this module, add the following configuration block to the modules array i
 ```
 
 ### Configuration options
+option | type | default | description
+--- | --- | ---
+`api_key` | `string` | '' | The API key from Pushbullet.
+`message_read_time` | `int` | 30000 | Message display timeout.
+`no_message_text` | `string` | 'No new notifications' | Message to display when there are no new notifications.
+`message_length` | `int` | 50 | Maximum length of characters to display for each message.
+`show_message_body` | `bool` | true | Display the message body.
+`number_of_messages` | `int` | 3 | Maximum number of messages to display.
+
 #### api_key
 Type: `String` Default value: `''`
 
